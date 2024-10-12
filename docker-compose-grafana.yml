@@ -9,6 +9,8 @@ services:
     ports:
       - 8000:8000
     command: ["/src/entrypoint.sh"]
+    networks:
+      - grafana_example_default
 
   grafana:
     image: grafana/grafana:latest
@@ -19,6 +21,8 @@ services:
       - grafana-configs:/etc/grafana
     env_file:
       - ./config.monitoring
+    networks:
+      - grafana_example_default
 
   prometheus:
     image: prom/prometheus:latest
@@ -30,6 +34,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - grafana_example_default
 
   node-exporter:
     image: prom/node-exporter:v1.3.1
@@ -44,9 +50,16 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude'
       - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfsrootfs/var/lib/docker/aufs)($$|/)'
+    networks:
+      - grafana_example_default
 
 volumes:
   grafana-data:
   grafana-configs:
   prom-data:
   prom-configs:
+
+
+networks:
+  grafana_example_default:
+    external: true
